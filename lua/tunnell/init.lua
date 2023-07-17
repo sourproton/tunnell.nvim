@@ -3,78 +3,84 @@ local M = {}
 local defaults = {
     tmux_target = "{right-of}",
     cell_header = "# %%",
+    use_default_keymaps = true,
 }
 
-vim.g.default_tmux_target = defaults.tmux_target
-vim.g.default_cell_header = defaults.cell_header
-
--- sets buffer-variable `cell_header` to value read from `vim.fn.input`
-M.set_cell_header = function()
-    vim.b.tunnell_cell_header = vim.fn.input({
+-- sets buffer-variables `cell_header` and `tmux_target`
+function M.config()
+    -- cell header
+    vim.b.cell_header = vim.fn.input({
         prompt = "Cell header: ",
         -- autocompletes with current cell header if one has been set, otherwise autocompletes with global
         -- cell header
-        default = vim.b.tunnell_cell_header and vim.b.tunnell_cell_header or vim.g.default_cell_header,
+        default = vim.b.cell_header and vim.b.cell_header or defaults.cell_header,
     })
-end
 
--- sets buffer-variable `tmuxtarget` to value read from `vim.fn.input`
-M.set_tmux_target = function()
-    vim.b.tunnell_tmux_target = vim.fn.input({
+    -- tmux target
+    vim.b.tmux_target = vim.fn.input({
         prompt = "Tmux target pane: ",
         -- autocompletes with current target if one has been set, otherwise autocompletes with global target
-        default = vim.b.tunnell_tmux_target and vim.b.tunnell_tmux_target or vim.g.default_tmux_target,
+        default = vim.b.tmux_target and vim.b.tmux_target or defaults.tmux_target,
     })
 end
 
 -- sends selected text to target
-M.send_selection = function()
-    local target = vim.b.tunnell_tmux_target and vim.b.tunnell_tmux_target or vim.g.default_tmux_target
-    -- load tmux buffer with selected text
-    vim.api.nvim_feedkeys(":'<,'>:w !tmux load-buffer - \r", "t", true)
-    -- paste buffer to target
-    vim.api.nvim_feedkeys(":silent !tmux paste-buffer -dpr -t " .. target .. "\r", "t", true)
-    -- send carriage return
-    vim.api.nvim_feedkeys(":silent !tmux send-keys -t " .. target .. " Enter\r", "t", true)
+function M.send_selection()
+    -- load buffer with lines
+    vim.cmd(":silent '<,'>:w !tmux load-buffer - ")
+
+    -- send lines
+    local target = vim.b.tmux_target and vim.b.tmux_target or defaults.tmux_target
+    vim.cmd("silent !tmux paste-buffer -dpr -t " .. target)
+
+    -- send <CR>
+    vim.cmd("silent !tmux send-keys -t " .. target .. " Enter")
 end
 
 -- sends cell to target
-M.send_cell = function()
-    local cell_header = vim.b.tunnell_cell_header and vim.b.tunnell_cell_header or vim.g.default_cell_header
-    -- go to start of the cell
-    -- "/" to enter search mode
-    -- "{cell_header}\r" to go to the next cell header
-    -- "N" to go to the beggining of the original cell
-    vim.api.nvim_feedkeys("/" .. cell_header .. "\rN", "t", true)
+function M.send_cell()
+    local cell_header = vim.b.cell_header and vim.b.cell_header or defaults.cell_header
 
-    -- know in which cell the cursor is
-    local sc = vim.fn.searchcount()
+    -- define start and end of cell
+    local start_line = vim.fn.search(cell_header, "bcnW")
 
-    -- check if it's the last cell
-    if sc.current == sc.total then
-        -- if it's the last cell, select until end of file
-        -- "v" to enter select mode
-        -- "G" to extend the selection until the end of the file (end of last cell)
-        vim.api.nvim_feedkeys("vG", "t", true)
-    else
-        -- if not in the last cell, select until one line above next cell
-        -- "v" to enter select mode
-        -- "n" to extend the selection until the header of the next cell
-        -- "k" to go back one line
-        vim.api.nvim_feedkeys("vnk", "t", true)
+    if start_line == 0 then
+        print("no cell header found")
+        return
     end
 
-    -- send selection
-    M.send_selection()
+    local end_line = vim.fn.search(cell_header, "nW")
+    end_line = end_line == 0 and vim.fn.line("w$") or end_line - 1
 
-    -- go to next cell
-    -- the cell header is still in the search history, so "n" jumps to the next cell header
-    vim.api.nvim_feedkeys("n", "t", true)
+    -- load buffer with lines
+    vim.cmd("silent " .. start_line .. "," .. end_line .. ":w !tmux load-buffer - ")
+
+    -- send lines
+    local target = vim.b.tmux_target and vim.b.tmux_target or defaults.tmux_target
+    vim.cmd("silent !tmux paste-buffer -dpr -t " .. target)
+
+    -- send <CR>
+    vim.cmd("silent !tmux send-keys -t " .. target .. " BSpace Enter")
+
+    -- put curson on next cell
+    vim.cmd("silent /" .. cell_header)
 end
 
-vim.api.nvim_create_user_command("TunnelSetCellHeader", M.set_cell_header, {})
-vim.api.nvim_create_user_command("TunnelSetTmuxTarget", M.set_tmux_target, {})
-vim.api.nvim_create_user_command("TunnelSendSelection", M.send_selection, {})
-vim.api.nvim_create_user_command("TunnelSendCell", M.send_cell, {})
+-- user-configurable function
+function M.setup(user_config)
+    -- merge user-config with defaults
+    defaults = vim.tbl_deep_extend("force", defaults, user_config or {})
+
+    -- set commands
+    vim.api.nvim_create_user_command("TunnelConfig", M.config, {})
+    vim.api.nvim_create_user_command("TunnellSelection", M.send_selection, {})
+    vim.api.nvim_create_user_command("TunnellCell", M.send_cell, {})
+
+    -- keymaps
+    if defaults.use_default_keymaps then
+        vim.keymap.set({ "n" }, "<leader>t", ":TunnellCell<CR>", { desc = "Tunnell cell" })
+        vim.keymap.set({ "v" }, "<leader>t", ":<C-U>TunnellSelection<CR>", { desc = "Tunnell selection" })
+    end
+end
 
 return M
