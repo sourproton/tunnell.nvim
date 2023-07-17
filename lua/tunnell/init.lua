@@ -27,7 +27,7 @@ end
 -- sends selected text to target
 function M.send_selection()
     -- load buffer with lines
-    vim.cmd(":silent '<,'>:w !tmux load-buffer - ")
+    vim.cmd("silent '<,'>:w !tmux load-buffer - ")
 
     -- send lines
     local target = vim.b.tmux_target and vim.b.tmux_target or defaults.tmux_target
