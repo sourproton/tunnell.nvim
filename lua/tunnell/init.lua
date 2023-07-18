@@ -65,7 +65,7 @@ local function tunnell_cell()
     tunnell_range({ line1 = start_line, line2 = end_line })
 
     -- put curson on next cell
-    vim.cmd("/" .. cell_header)
+    vim.cmd("silent /" .. cell_header)
 end
 
 -- Setup function for users to call from their plugin managers
