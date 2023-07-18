@@ -2,13 +2,43 @@
 
 A [neovim](https://neovim.io/) plugin to tunnell your selections and cells to targets, written in [Lua](https://www.lua.org/).
 
-## Tunnelling
-
-No worries, we are not going to get into [quantum physics](https://en.wikipedia.org/wiki/Quantum_tunnelling), because tunnell.nvim is about ~sending~ tunnelling a selection of your buffer to a target. The plugin can also automatically detect the code cell your cursor is in and tunnell it.
-
 ## Usage
 
-## Configuration
+![tunnelldemo](demo/tunneldemo.gif)
+
+## Installation
+
+The plugin is simple and easy to install. Just add "sourproton/tunnell.nvim" to your package manager and call `setup()`:
+
+```lua
+-- using lazy.nvim package manager
+
+require("lazy").setup({
+    -- ...
+
+    {
+        "sourproton/tunnell.nvim",
+        config = function()
+            require("tunnell.nvim").setup({
+                -- the default options are:
+                tmux_target = "{right-of}",
+                cell_header = "# %%",
+                use_default_keymaps = true,
+            })
+        end
+    }
+
+    -- ...
+})
+```
+
+The plugin exports 3 commands:
+
+- `:TunnellConfig`, to change the values of `cell_header` and `tmux_target` for the current buffer
+- `:TunnellSelection`, to tunnell the active selection when in visual mode (remove the `'<,'>` added by neovim in the command line)
+- `:TunnellCell`, to tunnell the cell where the cursor is when in normal mode
+
+If `use_default_keymaps` is `true`, then `<leader>t` is mapped to `:<C-U>TunnellSelection<CR>` in visual mode and to `:TunnelCell<CR>` when in normal mode
 
 ## About
 
