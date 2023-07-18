@@ -1,6 +1,6 @@
 # tunnell.nvim
 
-A [neovim](https://neovim.io/) plugin to tunnell your selections and cells to targets, written in [Lua](https://www.lua.org/).
+A [neovim](https://neovim.io/) plugin to ~send~ tunnell your selections and cells to targets, written in [Lua](https://www.lua.org/).
 
 ## Usage
 
