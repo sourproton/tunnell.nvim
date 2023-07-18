@@ -13,10 +13,10 @@ A [neovim](https://neovim.io/) plugin to ~send~ tunnell your selections and cell
 
 ## Installation
 
-The plugin is simple and easy to install. Just add "sourproton/tunnell.nvim" to your package manager and call `setup()`:
+The plugin is simple and easy to install. Just add "sourproton/tunnell.nvim" to your plugin manager and call `setup()`:
 
 ```lua
--- using lazy.nvim package manager
+-- using lazy.nvim plugin manager
 
 require("lazy").setup({
     -- ...
@@ -26,9 +26,9 @@ require("lazy").setup({
         config = function()
             require("tunnell.nvim").setup({
                 -- the default options are:
-                tmux_target = "{right-of}",
-                cell_header = "# %%",
-                use_default_keymaps = true,
+                -- tmux_target = "{right-of}",
+                -- cell_header = "# %%",
+                -- use_default_keymaps = true,
             })
         end
     }
