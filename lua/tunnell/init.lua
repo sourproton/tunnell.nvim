@@ -32,10 +32,10 @@ function M.send_selection()
 
     -- send lines
     local target = vim.b.tmux_target and vim.b.tmux_target or defaults.tmux_target
-    vim.cmd("silent !tmux paste-buffer -dpr -t " .. target)
+    vim.fn.system("tmux paste-buffer -dpr -t " .. target)
 
     -- send <CR> to run cell in REPL
-    vim.cmd("silent !tmux send-keys -t " .. target .. " Enter")
+    vim.fn.system("tmux send-keys -t " .. target .. " Enter")
 end
 
 -- Sends cell to target
