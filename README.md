@@ -4,7 +4,11 @@ A [neovim](https://neovim.io/) plugin to tunnell your selections and cells to ta
 
 ## Usage
 
-![tunnelldemo](demo/tunneldemo.gif)
+![tunnelldemo](demo/tunnelldemo.gif)
+
+- `:TunnellSelection` to tunnell active selection
+- `:TunnellCell` to tunnell the cell where the cursor is. Note that the cursor doesn't need to be on the header of the cell, but anywhere inside it
+- `:TunnellConfig` to change the default cell header (`# %%`) or the default target (`{right-of}`)
 
 ## Installation
 
@@ -31,12 +35,6 @@ require("lazy").setup({
     -- ...
 })
 ```
-
-The plugin exports 3 commands:
-
-- `:TunnellConfig`, to change the values of `cell_header` and `tmux_target` for the current buffer
-- `:TunnellSelection`, to tunnell the active selection when in visual mode (remove the `'<,'>` added by neovim in the command line)
-- `:TunnellCell`, to tunnell the cell where the cursor is when in normal mode
 
 If `use_default_keymaps` is `true`, then `<leader>t` is mapped to `:<C-U>TunnellSelection<CR>` in visual mode and to `:TunnelCell<CR>` when in normal mode
 
