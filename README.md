@@ -6,10 +6,9 @@ A [neovim](https://neovim.io/) plugin to ~send~ tunnell your selections and cell
 
 ![tunnelldemo](demo/tunnelldemo.gif)
 
-- `:TunnellCell` to tunnell the cell where the cursor is in normal mode. Note that the cursor doesn't need to be on the header of the cell, but anywhere inside it
-- Navigate to the next or previous cell with `n` and `N`
-- `:'<,'>TunnellSelection` to tunnell the active selection in visual mode
-- `:TunnellConfig` to change the default cell header (`# %%`) or the default target (`{right-of}`)
+- `:TunnellCell` to tunnell the cell where the cursor is. Note that the cursor doesn't need to be on the cell's header, but anywhere in it
+- `:'<,'>TunnellRange` to tunnell the active selection, or any other range of lines with `:startline,endlineTunnellRange`
+- `:TunnellConfig` to change the default cell header (`# %%`) or the default target (`{right-of}`) of the current buffer
 
 ## Installation
 
@@ -23,21 +22,33 @@ require("lazy").setup({
 
     {
         "sourproton/tunnell.nvim",
+
         config = function()
             require("tunnell.nvim").setup({
-                -- the default options are:
+                -- optional: change the default values
                 -- tmux_target = "{right-of}",
                 -- cell_header = "# %%",
-                -- use_default_keymaps = true,
             })
         end
+
+        -- optional: lazy load plugin on keymaps
+        -- keys = {
+        --     { "<leader>tt", ":TunnellCell<CR>",   mode = { "n" }, desc = "Tunnell cell" },
+        --     { "<leader>tt", ":TunnellRange<CR>",  mode = { "v" }, desc = "Tunnell range" },
+        --     { "<leader>tc", ":TunnellConfig<CR>", mode = { "n" }, desc = "Tunnell config" },
+        -- },
+
+        -- optional: lazy load plugin on commands
+        -- cmd = {
+        --     "TunnellCell",
+        --     "TunnellRange",
+        --     "TunnellConfig",
+        -- },
     }
 
     -- ...
 })
 ```
-
-If `use_default_keymaps` is `true`, then `<leader>t` is mapped to `:<C-U>TunnellSelection<CR>` in visual mode and to `:TunnelCell<CR>` in normal mode.
 
 ## About
 
