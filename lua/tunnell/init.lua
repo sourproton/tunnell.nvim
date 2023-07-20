@@ -75,15 +75,15 @@ local function tunnell_cell()
     vim.cmd("silent /" .. cell_header)
 end
 
+-- create user commands
+vim.api.nvim_create_user_command("TunnellConfig", config, {})
+vim.api.nvim_create_user_command("TunnellRange", tunnell_range, { range = true })
+vim.api.nvim_create_user_command("TunnellCell", tunnell_cell, {})
+
 -- Setup function for users to call from their plugin managers
 function M.setup(user_config)
     -- merge user-config with defaults
     defaults = vim.tbl_deep_extend("force", defaults, user_config or {})
-
-    -- create user commands
-    vim.api.nvim_create_user_command("TunnellConfig", config, {})
-    vim.api.nvim_create_user_command("TunnellRange", tunnell_range, { range = true })
-    vim.api.nvim_create_user_command("TunnellCell", tunnell_cell, {})
 end
 
 return M
