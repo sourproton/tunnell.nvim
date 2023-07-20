@@ -6,7 +6,7 @@ One use case is having the comfort of editing code in neovim, while tunnelling i
 
 ## Usage
 
-![tunnelldemo](demo/tunnelldemo.webm)
+[tunnelldemo.webm](https://github.com/sourproton/tunnell.nvim/assets/66533348/6a105ffc-9849-41fe-82e3-d1a8750e7375)
 
 - `:TunnellCell` to tunnell the cell where the cursor is. Note that the cursor doesn't need to be on the cell's header, but anywhere in it
 - `:'<,'>TunnellRange` to tunnell the active selection, or any other range of lines with `:startline,endlineTunnellRange`
