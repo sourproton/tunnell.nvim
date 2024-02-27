@@ -63,7 +63,7 @@ local function tunnell_cell()
     -- if no header found below cursor, cursor is in the last cell so end line should be the
     -- last line of the file. Otherwise, end line is one line above next cell header
     if end_line == 0 then
-        end_line = vim.fn.line("w$")
+        end_line = vim.fn.line("$")
     else
         end_line = end_line - 1
     end
